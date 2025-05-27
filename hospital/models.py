@@ -9,11 +9,12 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patientID'))
+    doctorID = db.Column(db.Integer, db.ForeignKey('Doctors.doctorID'))
     password_hash = db.Column(db.String(60), nullable=False)
     role = db.Column(db.String(45), nullable=False, default='user')
 
+    doctor = db.relationship('Doctor', backref='user', uselist=False)
     patient = db.relationship('Patient', back_populates='user', uselist=False)
-    doctor = db.relationship('Doctor', back_populates='user', uselist=False)
     orders = db.relationship('Order', back_populates='user')
 
     def get_id(self):
@@ -45,13 +46,13 @@ class Patient(db.Model):
 
 class Doctor(db.Model):
     __tablename__ = 'Doctors'
-    doctorID = db.Column(db.Integer, db.ForeignKey('users.userID'), primary_key=True)
+    doctorID = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(45), nullable=False)
     last_name = db.Column(db.String(45), nullable=False)
     degree = db.Column(db.String(45), nullable=False)
     specialization = db.Column(db.String(45), nullable=False)
+    email = db.Column(db.String(100), unique=True)
 
-    user = db.relationship('User', back_populates='doctor')
     appointments = db.relationship('Appointment', back_populates='doctor')
 
 

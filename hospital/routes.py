@@ -1,6 +1,6 @@
 from hospital import app #, conn
 from hospital.models import User, Patient, Doctor, Appointment, Visit, HeartData, MLPrediction, Drug, Order
-from hospital.forms import ExistingPatientRegisterForm, NewPatientRegisterForm, Login_form
+from hospital.forms import ExistingPatientRegisterForm, NewPatientRegisterForm, Login_form, PurchaseForm
 from hospital import db
 
 from hospital import app
@@ -13,10 +13,10 @@ from functools import wraps
 def home_page():
     return render_template('home.html')
 
-def admin_required(f):
+def doctor_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'admin':
+        if not current_user.is_authenticated or current_user.role != 'doctor':
             abort(403)  # Forbidden
         return f(*args, **kwargs)
     return decorated_function
@@ -32,16 +32,32 @@ def login_page():
     form = Login_form()
 
     if form.validate_on_submit():
-        attempted_user = User.query.join(User.patient).filter(Patient.email == form.email.data).first()
+        email_input = form.email.data
+        password_input = form.password.data
 
-        if attempted_user and attempted_user.is_password_correct(form.password.data):
+        # Próbujemy znaleźć użytkownika jako pacjenta
+        attempted_user = User.query.join(User.patient).filter(Patient.email == email_input).first()
+
+        # Jeśli nie znaleziono pacjenta, szukamy lekarza
+        if not attempted_user:
+            attempted_user = User.query.join(User.doctor).filter(Doctor.email == email_input).first()
+
+        # Jeśli użytkownik istnieje i hasło się zgadza
+        if attempted_user and attempted_user.is_password_correct(password_input):
             login_user(attempted_user)
-            flash(f"Logged in as {attempted_user.role}: {attempted_user.userID}", category='success')
-            return redirect(url_for('doctor_page') if attempted_user.role == 'admin' else url_for('home_page'))
-        else:
-            flash('Wrong email or password', category='danger')
-        
+
+            flash(f"Zalogowano jako {attempted_user.role}: {attempted_user.userID}", category='success')
+
+            # Przekierowanie w zależności od roli
+            if attempted_user.role == 'admin':
+                return redirect(url_for('doctor_profile'))
+            else:
+                return redirect(url_for('home_page'))
+
+        flash('Nieprawidłowy email lub hasło', category='danger')
+
     return render_template('login.html', form=form)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
@@ -104,3 +120,85 @@ def logout_page():
     logout_user()
     flash('You have been log out', category='info')
     return redirect(url_for('home_page'))
+
+
+@app.route('/market', methods=['GET', 'POST'])
+def market_page():
+    drugs = Drug.query.all()
+    form = PurchaseForm()
+
+    if request.method == 'POST' and current_user.is_authenticated:
+        drug_name = request.form.get('purchased_item').strip()
+        drug = Drug.query.filter_by(drug_name=drug_name).first()
+        if drug:
+            order = Order(userID=current_user.userID, drugID=drug.drugID)
+            db.session.add(order)
+            db.session.commit()
+            flash(f"Kupiłeś {drug.drug_name}!", "success")
+            return redirect(url_for('market_page'))
+
+    return render_template('market.html', drugs=drugs, purchase_form=form)
+
+@app.route('/profile')
+@login_required
+def profile_page():
+    orders = Order.query.filter_by(userID=current_user.userID).all()
+    appointments = Appointment.query.filter_by(patientID=current_user.patient_id).all()
+
+    return render_template('profile.html', orders=orders, appointments=appointments)
+
+@app.route('/doctors')
+def doctors_page():
+    doctors = Doctor.query.all()
+    return render_template('doctors.html', doctors=doctors)
+
+
+@app.route('/book/<int:doctor_id>', methods=['GET', 'POST'])
+@login_required
+def book_appointment(doctor_id):
+    # Przykładowe umawianie na jutro
+    from datetime import date, timedelta
+    tomorrow = date.today() + timedelta(days=1)
+
+    appointment = Appointment(patientID=current_user.patient_id, doctorID=doctor_id, date=tomorrow, status="Zaplanowana")
+    db.session.add(appointment)
+    db.session.commit()
+    flash("Wizyta została umówiona!", "success")
+    return redirect(url_for('doctors_page'))
+
+
+@app.route('/doctor/profile', methods=['GET', 'POST'])
+@login_required
+def doctor_profile():
+    # Pobierz wszystkie wizyty przypisane do danego lekarza
+    doctor_id = current_user.doctorID  # Zakładamy, że jest powiązanie User ↔ Doctor
+    appointments = Appointment.query.filter_by(doctorID=doctor_id).all()
+
+    if request.method == 'POST':
+        appointment_id = request.form.get('appointment_id')
+        status = request.form.get('status')
+        diagnosis = request.form.get('diagnosis')
+        notes = request.form.get('notes')
+
+        # Zmień status wizyty
+        appointment = Appointment.query.get(appointment_id)
+        if appointment:
+            appointment.status = status
+
+            # Dodaj lub zaktualizuj Visit
+            visit = Visit.query.filter_by(appointmentID=appointment_id).first()
+            if not visit:
+                visit = Visit(appointmentID=appointment_id)
+                db.session.add(visit)
+            visit.dignosis = diagnosis
+            visit.notes = notes
+
+            db.session.commit()
+            flash('Wizyta została zaktualizowana.', 'success')
+        return redirect(url_for('doctor_profile'))
+
+    return render_template('doctor_profile.html', appointments=appointments)
+
+
+
+

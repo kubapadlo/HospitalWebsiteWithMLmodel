@@ -23,7 +23,7 @@
                   <a class="nav-link" href="{{url_for('home_page')}}">Strona główna <span class="sr-only">(current)</span></a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link" href="#">Moje wizyty</a>
+                  <a class="nav-link" href="{{url_for('doctor_profile')}}">Moje wizyty</a>
                </li>
             </ul>
             {%else%}
@@ -32,7 +32,7 @@
                   <a class="nav-link" href="{{url_for('home_page')}}">Strona główna <span class="sr-only">(current)</span></a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link" href="#">Sklep</a>
+                  <a class="nav-link" href="{{url_for('market_page')}}">Sklep</a>
                </li>
                <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -52,6 +52,9 @@
                </li>
                <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('logout_page') }}">Wyloguj</a>
+               </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('profile_page') }}">Moj profil</a>
                </li>
             </ul>
             {% else %}

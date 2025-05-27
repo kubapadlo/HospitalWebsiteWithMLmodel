@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %} Profil użytkownika {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Zakupione leki -->
+        <div class="col-md-7">
+            <h3 class="mb-4">Zakupione leki</h3>
+            {% if orders %}
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Nazwa leku</th>
+                        <th>Opis</th>
+                        <th>Cena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.drug.drug_name }}</td>
+                        <td>{{ order.drug.description }}</td>
+                        <td>{{ order.drug.prize }} PLN</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nie dokonano jeszcze żadnych zakupów.</p>
+            {% endif %}
+        </div>
+
+        <!-- Umówione wizyty -->
+        <div class="col-md-5">
+            <h3 class="mb-4">Umówione wizyty</h3>
+            {% if appointments %}
+            <ul class="list-group">
+                {% for ap in appointments %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Data:</strong> {{ ap.date.strftime('%Y-%m-%d') }}<br>
+                        <strong>Lekarz ID:</strong> {{ ap.doctorID }}<br>
+                        <strong>Status:</strong> {{ ap.status }}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Brak umówionych wizyt.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

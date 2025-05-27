@@ -1,2 +1,34 @@
 {% extends 'base.html' %}
 
+{% block title %} Market {% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        {% for drug in drugs %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='img/polocard.jpg') }}" class="card-img-top" alt="{{ drug.drug_name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ drug.drug_name }}</h5>
+                    <p class="card-text">{{ drug.description }}</p>
+                    <p class="card-text"><strong>{{ drug.prize }} PLN</strong></p>
+                    {% if current_user.is_authenticated %}
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#purchase-modal-{{ drug.drugID }}">
+                            Kup
+                        </button>
+                    {% else %}
+                        <p class="text-muted">Zaloguj się, aby kupić</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Wstawienie modali -->
+{% for drug in drugs %}
+    {% include 'includes/purchase_modal.html' %}
+{% endfor %}
+{% endblock %}

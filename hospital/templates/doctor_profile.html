@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %} Panel Lekarza {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Twoje umówione wizyty</h2>
+    {% if appointments %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Pacjent ID</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Diagnoza</th>
+                        <th>Notatki</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ap in appointments %}
+                    <tr>
+                        <form method="POST">
+                            <input type="hidden" name="appointment_id" value="{{ ap.apointmentID }}">
+                            <td>{{ ap.patientID }}</td>
+                            <td>{{ ap.date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <select name="status" class="form-control">
+                                    <option value="Zaplanowana" {% if ap.status == 'Zaplanowana' %}selected{% endif %}>Zaplanowana</option>
+                                    <option value="Odbyta" {% if ap.status == 'Odbyta' %}selected{% endif %}>Odbyta</option>
+                                    <option value="Anulowana" {% if ap.status == 'Anulowana' %}selected{% endif %}>Anulowana</option>
+                                </select>
+                            </td>
+                            {% set visit = ap.visits[0] if ap.visits else None %}
+                            <td>
+                                <input type="text" name="diagnosis" class="form-control" value="{{ visit.dignosis if visit else '' }}">
+                            </td>
+                            <td>
+                                <input type="text" name="notes" class="form-control" value="{{ visit.notes if visit else '' }}">
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-success">Zapisz</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Brak wizyt do wyświetlenia.</p>
+    {% endif %}
+</div>
+{% endblock %}
