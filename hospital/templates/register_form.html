@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Rejestracja {% if type == 'existing' %}(pacjent istniejący){% else %}(nowy pacjent){% endif %}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label(class="form-label") }}
+                {{ field(class="form-control") }}
+                {% if field.errors %}
+                    <ul class="text-danger">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success">Zarejestruj</button>
+    </form>
+</div>
+{% endblock %}

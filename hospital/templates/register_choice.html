@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Rejestracja</h2>
+    <p>Wybierz odpowiednią opcję:</p>
+    <a href="{{ url_for('register_page', type='existing') }}" class="btn btn-primary">Mam już dane medyczne</a>
+    <a href="{{ url_for('register_page', type='new') }}" class="btn btn-secondary">Jestem nowym pacjentem</a>
+</div>
+{% endblock %}

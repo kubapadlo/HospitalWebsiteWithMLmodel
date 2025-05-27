@@ -1,26 +1,43 @@
-from hospital import db
+from hospital import db, bcrypt, login_manager
+from flask_login import UserMixin
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
     userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(45), unique=True, nullable=False)
-    password_hash = db.Column(db.String(45), nullable=False)
-    role = db.Column(db.String(45), nullable=False)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.patientID'))
+    password_hash = db.Column(db.String(60), nullable=False)
+    role = db.Column(db.String(45), nullable=False, default='user')
 
     patient = db.relationship('Patient', back_populates='user', uselist=False)
     doctor = db.relationship('Doctor', back_populates='user', uselist=False)
     orders = db.relationship('Order', back_populates='user')
 
+    def get_id(self):
+        return str(self.userID)
+
+    @property
+    def password(self): # pseudo-pole TYLKO DO ODCZYTU
+        raise AttributeError("Hasło nie może być odczytane!")
+    
+    @password.setter        # definiuje co sie dzieje gdy przypisuje wartosc do pola password(automatyczne hashowanie)
+    def password(self, plain_password):
+        self.password_hash = bcrypt.generate_password_hash(plain_password).decode('utf-8')
+
+    def is_password_correct(self, attempted_password):
+        return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
 class Patient(db.Model):
     __tablename__ = 'patients'
-    patientID = db.Column(db.Integer, db.ForeignKey('users.userID'), primary_key=True)
+    patientID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(45), nullable=False)
     last_name = db.Column(db.String(45), nullable=False)
-    sex = db.Column(db.String(45), nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     adress = db.Column(db.String(45), nullable=False)
-    patientscol = db.Column(db.String(45), nullable=False)
+    email = db.Column(db.String(100), unique=True)
 
     user = db.relationship('User', back_populates='patient')
     appointments = db.relationship('Appointment', back_populates='patient')
@@ -31,7 +48,8 @@ class Doctor(db.Model):
     doctorID = db.Column(db.Integer, db.ForeignKey('users.userID'), primary_key=True)
     first_name = db.Column(db.String(45), nullable=False)
     last_name = db.Column(db.String(45), nullable=False)
-    license_number = db.Column(db.Integer, nullable=False)
+    degree = db.Column(db.String(45), nullable=False)
+    specialization = db.Column(db.String(45), nullable=False)
 
     user = db.relationship('User', back_populates='doctor')
     appointments = db.relationship('Appointment', back_populates='doctor')
@@ -88,6 +106,11 @@ class Drug(db.Model):
     __tablename__ = 'drugs'
     drugID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     drug_name = db.Column(db.String(45), nullable=False)
+    prize = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+
+    orders = db.relationship('Order', back_populates='drug') 
+
 
 class Order(db.Model):
     __tablename__ = 'orders'

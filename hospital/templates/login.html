@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Login Page
+{% endblock %}
+
+{% block content%}
+<div class='container'>
+    <h1 class='h3'>
+        Please Login
+    </h1>
+    <form method='POST' class='form-signin'>
+        {{ form.hidden_tag() }}     <!-- sprawdza ukryte pole HTML ktore chroni przed atakami CSRF-->
+
+        {{ form.email.label() }}    <!-- mozna odwolywac sie do zmiennych bo przeslalismy form w render_template-->
+        {{ form.email(class='form-control', placeholder='email') }}
+
+        {{ form.password.label() }}
+        {{ form.password(class='form-control', placeholder='password') }}
+
+        {{ form.submit(class='btn mt-2 mb-2 btn-primary') }}
+        
+        <br><br>
+        <div class='check-box'>
+            <h4 class='h6'> Do not have account? </h4>
+            <a class='btn btn-secondary' href="{{ url_for('register_page') }}"> Register </a>
+        </div>
+    </form>
+<div>
+{% endblock %}
