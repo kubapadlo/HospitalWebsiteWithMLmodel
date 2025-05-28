@@ -1,9 +1,58 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Strona Glowna
+Strona Główna
 {% endblock %}
 
- {%block content %} 
- Strona glowna
- {% endblock %}
+{% block content %}
+<!-- HERO SECTION -->
+<section class="bg-primary text-white text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Szpital Kardiologiczny VitaCor</h1>
+    <p class="lead">Nowoczesna opieka kardiologiczna – z troską o Twoje serce</p>
+    <a href="{{url_for('doctor_page')}}" class="btn btn-light btn-lg mt-3">Umów się na wizytę!</a>
+  </div>
+</section>
+
+<!-- USŁUGI -->
+<section id="services" class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Nasze Usługi</h2>
+    <div class="row">
+      <div class="col-md-4 text-center mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Konsultacje kardiologiczne</h5>
+            <p class="card-text">Profesjonalna diagnostyka i plan leczenia dostosowany do potrzeb pacjenta.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 text-center mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Echokardiografia</h5>
+            <p class="card-text">Nowoczesny sprzęt do dokładnego obrazowania serca i naczyń.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 text-center mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Holter EKG</h5>
+            <p class="card-text">Całodobowe monitorowanie pracy serca w codziennych warunkach.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- O NAS -->
+<section class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">O nas</h2>
+    <p class="lead text-center">Szpital VitaCor to nowoczesna placówka specjalizująca się w diagnostyce i leczeniu chorób serca. Naszą misją jest zapewnienie pacjentom kompleksowej, nowoczesnej i empatycznej opieki kardiologicznej.</p>
+  </div>
+</section>
+
+{% endblock %}

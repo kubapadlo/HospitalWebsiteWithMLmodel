@@ -46,11 +46,13 @@ def login_page():
         if attempted_user and attempted_user.is_password_correct(password_input):
             login_user(attempted_user)
 
-            flash(f"Zalogowano jako {attempted_user.role}: {attempted_user.userID}", category='success')
+            flash(f"Zalogowano!", category='success')
 
             # Przekierowanie w zależności od roli
-            if attempted_user.role == 'admin':
+            if attempted_user.role == 'doctor':
                 return redirect(url_for('doctor_profile'))
+            elif attempted_user.role == 'admin':
+                return redirect(url_for('admin_page'))
             else:
                 return redirect(url_for('home_page'))
 
@@ -76,7 +78,7 @@ def register_page():
 
             if existing_patient:
                 if existing_patient.user:
-                    flash("Account already exists for this patient.", category='danger')
+                    flash("Konto z takim emailem już istnieje", category='danger')
                     return redirect(url_for('register_page', type='existing'))
 
                 user_to_create = User(
@@ -86,10 +88,10 @@ def register_page():
                 db.session.add(user_to_create)
                 db.session.commit()
                 login_user(user_to_create)
-                flash("Account created.", category='success')
+                flash("Konto utworzone!", category='success')
                 return redirect(url_for('home_page'))
 
-            flash("No patient found with that email.", category='danger')
+            flash("Nie ma konta przypisanego do tego emaila", category='danger')
 
         elif form_type == 'new':
             new_patient = Patient(
@@ -109,7 +111,7 @@ def register_page():
             db.session.add(user_to_create)
             db.session.commit()
             login_user(user_to_create)
-            flash("Account created and patient registered.", category='success')
+            flash("Konto utworzone!", category='success')
             return redirect(url_for('home_page'))
 
     return render_template("register_form.html", form=form, type=form_type)
@@ -200,5 +202,10 @@ def doctor_profile():
     return render_template('doctor_profile.html', appointments=appointments)
 
 
-
-
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin_page():
+    patients = Patient.query.all()
+    doctors = Doctor.query.all()
+    appointments = Appointment.query.all()
+    return render_template('admin.html', patients=patients, doctors=doctors, appointments=appointments)

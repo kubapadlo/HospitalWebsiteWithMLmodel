@@ -1,22 +1,26 @@
+<!-- dla przejrzystości plików HTML modale umieszczam w osobnym pliku -->
+<!-- dzięki include wewnątrz pętli drugs mamy dostęp do zmiennej drug -->
+
 <div class="modal fade" id="purchase-modal-{{ drug.drugID }}" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">{{ drug.drug_name }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">
+                    {{ drug.drug_name }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
             </div>
             <div class="modal-body">
                 <form method="POST" action="{{ url_for('market_page') }}">
                     {{ purchase_form.hidden_tag() }}
-                    <p>Czy na pewno chcesz kupić <strong>{{ drug.drug_name }}</strong> za <strong>{{ drug.prize }} PLN</strong>?</p>
-                    <input type="hidden" name="purchased_item" value="{{ drug.drug_name }}">
-                    {{ purchase_form.submit(class="btn btn-success btn-block") }}
+                    Czy na pewno chcesz kupić <strong>{{ drug.drug_name }}</strong> za <strong>{{ drug.prize }} PLN</strong>?
+                    <input type="hidden" name="form_name" value="purchase">
+                    <input id="purchased_item" name="purchased_item" type="hidden" value="{{ drug.drug_name }}">
+                    {{ purchase_form.submit(class="btn btn-success w-100 mt-3") }}
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
             </div>
         </div>
     </div>

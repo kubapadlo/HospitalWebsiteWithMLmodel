@@ -4,11 +4,12 @@
 
 {% block content %}
 <div class="container-fluid">
+    <h1 class="text-center mb-5">Umawianie wizyty</h1>
     <div class="row">
         {% for doctor in doctors %}
         <div class="col-md-4 mb-4">
             <div class="card h-100">
-                <img src="{{ url_for('static', filename='img/doctor.jpg') }}" class="card-img-top" alt="Zdjęcie lekarza">
+                <img src="{{ url_for('static', filename='img/doctor' ~ doctor.doctorID ~ '.jpg') }}" class="card-img-top"  style="max-width: 300px;" alt="Zdjęcie lekarza">
                 <div class="card-body">
                     <h5 class="card-title">{{ doctor.first_name }} {{ doctor.last_name }}</h5>
                     <p class="card-text"><strong>Stopień:</strong> {{ doctor.degree }}</p>

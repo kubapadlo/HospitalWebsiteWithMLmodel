@@ -1,34 +1,35 @@
 {% extends 'base.html' %}
 
-{% block title %} Market {% endblock %}
+{% block title %}Sklep Szpitalny{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container py-5">
+    <h1 class="text-center mb-5">Sklep Szpitala VitaCor</h1>
     <div class="row">
         {% for drug in drugs %}
         <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <img src="{{ url_for('static', filename='img/polocard.jpg') }}" class="card-img-top" alt="{{ drug.drug_name }}">
-                <div class="card-body">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ url_for('static', filename='img/drug' ~ drug.drugID ~ '.jpg') }}" class="card-img-top" alt="{{ drug.drug_name }}">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ drug.drug_name }}</h5>
                     <p class="card-text">{{ drug.description }}</p>
-                    <p class="card-text"><strong>{{ drug.prize }} PLN</strong></p>
+                    <p class="card-text fw-bold text-primary">{{ drug.prize }} PLN</p>
                     {% if current_user.is_authenticated %}
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#purchase-modal-{{ drug.drugID }}">
-                            Kup
+                        <button type="button" class="btn btn-outline-success mt-auto" data-bs-toggle="modal" data-bs-target="#purchase-modal-{{ drug.drugID }}">
+                            Kup teraz
                         </button>
                     {% else %}
-                        <p class="text-muted">Zaloguj się, aby kupić</p>
+                        <p class="text-muted mt-auto">Zaloguj się, aby kupić</p>
                     {% endif %}
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-</div>
 
-<!-- Wstawienie modali -->
-{% for drug in drugs %}
-    {% include 'includes/purchase_modal.html' %}
-{% endfor %}
+    <!-- Modale zakupu -->
+    {% for drug in drugs %}
+        {% include 'includes/purchase_modal.html' %}
+    {% endfor %}
+</div>
 {% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Admin
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">Lista pacjentów</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>ID</th>
+          <th>Imię</th>
+          <th>Nazwisko</th>
+          <th>Data urodzenia</th>
+          <th>Adres</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for patient in patients %}
+        <tr>
+          <td>{{ patient.patientID }}</td>
+          <td>{{ patient.first_name }}</td>
+          <td>{{ patient.last_name }}</td>
+          <td>{{ patient.birth_date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ patient.adress }}</td>
+          <td>{{ patient.email }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mt-5 mb-3">Lista lekarzy</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>ID</th>
+          <th>Imię</th>
+          <th>Nazwisko</th>
+          <th>Tytuł naukowy</th>
+          <th>Specjalizacja</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doctor in doctors %}
+        <tr>
+          <td>{{ doctor.doctorID }}</td>
+          <td>{{ doctor.first_name }}</td>
+          <td>{{ doctor.last_name }}</td>
+          <td>{{ doctor.degree }}</td>
+          <td>{{ doctor.specialization }}</td>
+          <td>{{ doctor.email }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mt-5 mb-3">Lista wizyt</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>ID</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th>Pacjent</th>
+          <th>Lekarz</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appointment in appointments %}
+        <tr>
+          <td>{{ appointment.apointmentID }}</td>
+          <td>{{ appointment.date.strftime('%Y-%m-%d') if appointment.date else 'Brak daty' }}</td>
+          <td>{{ appointment.status }}</td>
+          <td>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</td>
+          <td>{{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
